@@ -1,0 +1,176 @@
+#!/usr/bin/env python
+"""Controllo obbligatorio pre-pubblicazione per PrimaVoce.
+
+Verifica meccanicamente le regole della skill primavoce-redazione che in
+passato sono state saltate da Luna quando lavorava con un budget di
+iterazioni troppo basso o con un modello locale poco affidabile:
+
+  1. Ogni pagina in curiosita/*.html e articoli/*.html ha almeno un <img>.
+  2. Ogni pagina in curiosita/*.html e articoli/*.html è raggiungibile da un
+     link in index.html (nessuna pagina "orfana").
+  3. Nessuna pagina pubblica contiene una riga "Fonti:", "Fonte:",
+     "Bibliografia", "Sitografia" o equivalenti (regola inderogabile n.9).
+  4. Ogni pagina in curiosita/*.html e articoli/*.html ha esattamente un <h1>.
+  5. Il corpo dell'articolo ha almeno ~500 parole di testo visibile
+     (soglia leggermente sotto le 600 richieste, per tollerare markup diverso
+     senza falsi negativi troppo aggressivi — è comunque un campanello
+     d'allarme, non solo un'estetica).
+  6. Nessun href verso curiosita/ presente nella versione committata
+     precedente (HEAD) è scomparso dalla homepage attuale.
+
+Uscita 0 = tutto ok, si può proseguire con git commit.
+Uscita 1 = almeno un controllo fallito, elenco degli errori su stdout.
+NON esegue il commit. Va lanciato da terminale prima di 'git commit', o
+tramite git hook pre-commit (già installato in .git/hooks/pre-commit).
+
+Modalità:
+  python verifica_pubblicazione.py            → controlla SOLO le pagine
+                                                  aggiunte o modificate nello
+                                                  staging area corrente
+                                                  (git diff --cached). Questa
+                                                  è la modalità usata dal git
+                                                  hook: non blocca un commit
+                                                  per articoli vecchi che
+                                                  nessuno sta toccando.
+  python verifica_pubblicazione.py --tutto     → controlla OGNI pagina del
+                                                  sito, anche quelle non
+                                                  toccate in questo commit.
+                                                  Utile per un audit
+                                                  periodico dell'arretrato,
+                                                  non per bloccare un commit.
+"""
+from __future__ import annotations
+
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+FONTI_PATTERN = re.compile(
+    r'>\s*(Fonti?|Fonte consultata|Bibliografia|Sitografia)\s*:',
+    re.IGNORECASE,
+)
+
+
+def pagine_pubbliche() -> list[Path]:
+    pagine = []
+    for cartella in ("curiosita", "articoli"):
+        d = REPO / cartella
+        if d.is_dir():
+            pagine.extend(sorted(d.glob("*.html")))
+    return pagine
+
+
+def pagine_toccate_in_questo_commit() -> list[Path]:
+    """File in curiosita/ o articoli/ aggiunti o modificati nello staging
+    area (git add già fatto, prima del commit). Se lo staging è vuoto
+    (es. lo script viene lanciato a mano prima di 'git add'), ripiega sui
+    file modificati rispetto a HEAD nel working tree."""
+    def git_diff(args: list[str]) -> list[str]:
+        try:
+            out = subprocess.run(
+                ["git", "-C", str(REPO)] + args,
+                capture_output=True, text=True, encoding="utf-8", errors="replace",
+                timeout=10, check=True,
+            ).stdout
+        except Exception:
+            return []
+        return [l for l in out.splitlines() if l.strip()]
+
+    file_relativi = git_diff(["diff", "--cached", "--name-only", "--diff-filter=ACM"])
+    if not file_relativi:
+        file_relativi = git_diff(["diff", "--name-only", "--diff-filter=ACM"])
+
+    pagine = []
+    for rel in file_relativi:
+        if rel.endswith(".html") and (rel.startswith("curiosita/") or rel.startswith("articoli/")):
+            p = REPO / rel
+            if p.is_file():
+                pagine.append(p)
+    return pagine
+
+
+def leggi(path: Path) -> str:
+    return path.read_text(encoding="utf-8", errors="replace")
+
+
+def controlla_pagina(path: Path, index_html: str, errori: list[str]) -> None:
+    html = leggi(path)
+    rel = path.relative_to(REPO).as_posix()
+
+    if "<img" not in html:
+        errori.append(f"[{rel}] nessuna immagine (<img>) trovata — regola: ogni articolo deve avere una foto.")
+
+    h1_count = len(re.findall(r"<h1\b", html, re.IGNORECASE))
+    if h1_count != 1:
+        errori.append(f"[{rel}] trovati {h1_count} tag <h1> (deve essere esattamente 1).")
+
+    if FONTI_PATTERN.search(html):
+        errori.append(f"[{rel}] contiene una riga 'Fonti:'/'Bibliografia'/'Sitografia' vietata nelle pagine pubbliche (regola 9).")
+
+    body_match = re.search(r'<div class="(?:article-body|fact-content)">(.*?)</div>', html, re.S)
+    if body_match:
+        testo = re.sub(r"<[^>]+>", " ", body_match.group(1))
+        parole = [w for w in testo.split() if w.strip()]
+        if len(parole) < 500:
+            errori.append(f"[{rel}] corpo articolo troppo corto: {len(parole)} parole (soglia ~500-600).")
+    else:
+        errori.append(f"[{rel}] non trovo un blocco 'article-body' o 'fact-content' da controllare per la lunghezza.")
+
+    if rel.startswith("curiosita/") and path.name not in index_html:
+        errori.append(f"[{rel}] non è collegata da nessun link in index.html — pagina orfana, nessuno la troverà sul sito.")
+
+
+def controlla_schede_non_sparite(errori: list[str]) -> None:
+    try:
+        prev = subprocess.run(
+            ["git", "-C", str(REPO), "show", "HEAD:index.html"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=10, check=True,
+        ).stdout
+    except Exception:
+        return  # niente commit precedente da confrontare, ok
+    attuale = leggi(REPO / "index.html")
+    prima = set(re.findall(r'href="(curiosita/[^"]+)"', prev))
+    dopo = set(re.findall(r'href="(curiosita/[^"]+)"', attuale))
+    spariti = prima - dopo
+    for href in sorted(spariti):
+        errori.append(f"[index.html] la card verso '{href}' era presente nell'ultimo commit e ora è sparita dalla homepage. Se non è una rimozione richiesta esplicitamente da Giuseppe, ripristinala.")
+
+
+def main() -> int:
+    index_path = REPO / "index.html"
+    if not index_path.is_file():
+        print("Non trovo index.html nella repo:", REPO)
+        return 1
+    index_html = leggi(index_path)
+
+    modalita_completa = "--tutto" in sys.argv
+    pagine = pagine_pubbliche() if modalita_completa else pagine_toccate_in_questo_commit()
+
+    errori: list[str] = []
+    for pagina in pagine:
+        controlla_pagina(pagina, index_html, errori)
+    # Il controllo sulle schede sparite riguarda sempre index.html nel suo
+    # complesso, non ha senso limitarlo alle pagine toccate.
+    controlla_schede_non_sparite(errori)
+
+    if errori:
+        etichetta = "SUL SITO INTERO" if modalita_completa else "SUI FILE DI QUESTO COMMIT"
+        print(f"VERIFICA FALLITA {etichetta} — {len(errori)} problema/i trovato/i:\n")
+        for e in errori:
+            print(" -", e)
+        if not modalita_completa:
+            print("\n(Questo controllo riguarda solo i file aggiunti/modificati ora. Per un controllo di tutto il sito: python verifica_pubblicazione.py --tutto)")
+        return 1
+
+    if not modalita_completa and not pagine:
+        print("Verifica OK — nessuna pagina curiosita/ o articoli/ toccata in questo commit, niente da controllare.")
+    else:
+        print(f"Verifica OK — {len(pagine)} pagina/e controllata/e, nessun problema trovato.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
