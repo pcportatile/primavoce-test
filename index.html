@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Demo di un moderno sito italiano di notizie">
+  <title>PrimaVoce — Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="facts.css">
+</head>
+<body>
+  <div class="demo-bar">ANTEPRIMA EDITORIALE · notizie aggiornate al 26 agosto 2026 · fonti consultabili</div>
+  <header class="site-header">
+    <div class="header-main shell">
+      <a class="logo" href="#" aria-label="PrimaVoce homepage"><span>PRIMA</span><b>VOCE</b></a>
+      <div class="header-actions">
+        <span class="date" id="today"></span>
+        <button class="menu-btn" id="menuBtn" aria-label="Apri menu" aria-expanded="false">☰</button>
+      </div>
+    </div>
+    <nav class="nav shell" id="mainNav" aria-label="Categorie">
+      <button class="nav-link active" data-category="tutte">In evidenza</button>
+      <button class="nav-link" data-category="italia">Italia</button>
+      <button class="nav-link" data-category="mondo">Mondo</button>
+      <button class="nav-link" data-category="tecnologia">Tecnologia</button>
+      <button class="nav-link" data-category="spettacolo">Spettacolo</button>
+      <button class="nav-link" data-category="sport">Sport</button>
+      <button class="nav-link curiosity-nav" data-category="curiosita">Lo sapevate che?</button>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="breaking" aria-label="Ultim'ora">
+      <span>ULTIM'ORA</span>
+      <div class="ticker">Taranto 2026: il nuoto azzurro chiude con 51 medaglie ai Giochi del Mediterraneo</div>
+    </section>
+
+    <section class="hero-grid article-item" data-category="italia">
+      <article class="lead-story">
+        <div class="lead-image image-city"><span class="tag">ITALIA</span></div>
+        <div class="lead-copy">
+          <p class="eyebrow">ECONOMIA · DATI ISTAT</p>
+          <h1>Export italiano in crescita: +9,8% su base annua a giugno</h1>
+          <p class="summary">Istat rileva un aumento mensile dell’1,6% per le esportazioni e dell’1,2% per le importazioni. Nel primo semestre 2026 l’export segna +4,5% rispetto allo stesso periodo dell’anno precedente.</p>
+          <div class="meta">Redazione PrimaVoce · 26 agosto 2026 · <a class="source-link" href="articoli/export-italiano-giugno-2026.html">Leggi l’articolo →</a></div>
+        </div>
+      </article>
+
+      <aside class="side-news">
+        <article class="mini-card article-item" data-category="tecnologia">
+          <div class="mini-image image-tech"></div>
+          <div><span class="mini-tag">SCIENZA</span><h2>FLEX, pronto il satellite ESA che osserverà la salute delle piante</h2><p>Il lancio è previsto il 15 settembre: mapperà la fluorescenza della vegetazione. <a class="source-link" href="articoli/flex-satellite-esa-salute-piante.html">Leggi →</a></p></div>
+        </article>
+        <article class="mini-card article-item" data-category="sport">
+          <div class="mini-image image-sport"></div>
+          <div><span class="mini-tag">SPORT</span><h2>Taranto 2026, il nuoto italiano saluta con 51 medaglie</h2><p>Nell’ultima sessione gli azzurri conquistano altre 16 medaglie. <a class="source-link" href="articoli/taranto-2026-nuoto-italia-51-medaglie.html">Leggi →</a></p></div>
+        </article>
+      </aside>
+    </section>
+
+    <section class="latest-section">
+      <div class="section-heading"><h2>Le ultime notizie</h2><span>AGGIORNATE IL 26 AGOSTO 2026</span></div>
+      <div class="news-grid">
+        <article class="news-card article-item" data-category="mondo tecnologia">
+          <div class="card-image image-space"><span class="tag">SPAZIO</span></div>
+          <div class="card-body"><div class="time">24 AGO</div><h3>Il telescopio Roman della NASA verso il lancio</h3><p>La partenza è prevista non prima del 30 agosto. Studierà energia oscura, materia oscura ed esopianeti.</p><a class="read-more" href="articoli/telescopio-roman-nasa-verso-lancio.html">Leggi l’articolo →</a></div>
+        </article>
+        <article class="news-card article-item" data-category="spettacolo">
+          <div class="card-image image-culture"><span class="tag">CULTURA</span></div>
+          <div class="card-body"><div class="time">25 AGO</div><h3>Venezia 83, tornano le Masterclass con i grandi del cinema</h3><p>Dal 3 al 9 settembre incontri con George Clooney, Luc Besson, Ellen Burstyn, Chloé Zhao e Luca Guadagnino.</p><a class="read-more" href="articoli/venezia-83-masterclass-cinema.html">Leggi l’articolo →</a></div>
+        </article>
+        <article class="news-card article-item" data-category="italia">
+          <div class="card-image image-world"><span class="tag">AMBIENTE</span></div>
+          <div class="card-body"><div class="time">25 AGO</div><h3>Sardegna, dieci Comuni insieme per proteggere la Posidonia</h3><p>La campagna “Non sono un’alga” spiega il valore della pianta marina nella difesa delle spiagge e della biodiversità.</p><a class="read-more" href="articoli/sardegna-campagna-tutela-posidonia.html">Leggi l’articolo →</a></div>
+        </article>
+        <article class="news-card article-item" data-category="sport">
+          <div class="card-image image-sport"><span class="tag">SPORT</span></div>
+          <div class="card-body"><div class="time">25 AGO</div><h3>Giochi del Mediterraneo, 51 medaglie dal nuoto azzurro</h3><p>L’Italia chiude le gare in vasca con 19 ori, 22 argenti e 10 bronzi; nell’ultima serata arrivano sei vittorie.</p><a class="read-more" href="articoli/taranto-2026-nuoto-italia-51-medaglie.html">Leggi l’articolo →</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="lo-sapevate" class="facts-section article-item" data-category="curiosita" aria-labelledby="facts-title">
+      <div class="facts-heading">
+        <div>
+          <p class="facts-kicker">CURIOSITÀ · SCOPERTE · RICERCHE SPECIALIZZATE</p>
+          <h2 id="facts-title">Lo sapevate che…?</h2>
+        </div>
+        <p class="facts-intro">Fatti sorprendenti spiegati con chiarezza e accompagnati da fonti verificabili.</p>
+      </div>
+      <div class="facts-grid">
+        <a class="fact-card fact-featured" href="curiosita/petricore-profumo-pioggia.html">
+          <div class="fact-number">01</div>
+          <span class="fact-topic">SCIENZA</span>
+          <h3>Il profumo della pioggia ha un nome: petricore</h3>
+          <p>È l’odore che percepiamo quando la pioggia cade su un terreno asciutto. Il termine descrive una combinazione di sostanze vegetali e geosmina liberate nell’aria.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+        <a class="fact-card" href="curiosita/polpo-tre-cuori.html">
+          <div class="fact-number">02</div>
+          <span class="fact-topic">NATURA</span>
+          <h3>I polpi hanno tre cuori</h3>
+          <p>Due pompano il sangue verso le branchie, mentre il terzo lo distribuisce al resto dell’organismo.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+        <a class="fact-card" href="curiosita/posidonia-pianta-marina.html">
+          <div class="fact-number">03</div>
+          <span class="fact-topic">MARE</span>
+          <h3>La Posidonia non è un’alga</h3>
+          <p>È una pianta marina con fiori, endemica del Mediterraneo. Le sue praterie sono habitat preziosi e aiutano a proteggere le coste.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+        <a class="fact-card" href="curiosita/venere-giorno-piu-lungo-anno.html">
+          <div class="fact-number">04</div>
+          <span class="fact-topic">SPAZIO</span>
+          <h3>Su Venere un giorno dura più di un anno</h3>
+          <p>Venere impiega 243 giorni terrestri per completare una rotazione su se stesso, ma soltanto 225 giorni per compiere un’orbita intorno al Sole.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+        <a class="fact-card" href="curiosita/fulmine-temperatura-tuono.html">
+          <div class="fact-number">05</div>
+          <span class="fact-topic">METEO</span>
+          <h3>Un fulmine può essere cinque volte più caldo del Sole</h3>
+          <p>Nel suo canale l’aria può raggiungere circa 30.000 °C, una temperatura cinque volte superiore a quella della superficie solare. L’espansione improvvisa dell’aria produce il tuono.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+        <a class="fact-card" href="curiosita/axolotl-rigenerazione-arti.html">
+          <div class="fact-number">06</div>
+          <span class="fact-topic">BIOLOGIA</span>
+          <h3>L’axolotl può ricostruire un arto perduto</h3>
+          <p>Questa salamandra è capace di rigenerare zampe, coda e parti di diversi tessuti. Gli scienziati la studiano per comprendere i meccanismi che guidano la riparazione del corpo.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+        <a class="fact-card" href="curiosita/tardigradi-sopravvivenza-spazio.html">
+          <div class="fact-number">07</div>
+          <span class="fact-topic">VITA ESTREMA</span>
+          <h3>I tardigradi sono sopravvissuti esposti allo spazio</h3>
+          <p>Questi minuscoli animali, chiamati anche “orsi d’acqua”, hanno resistito al vuoto e alle difficili condizioni dell’ambiente spaziale durante esperimenti condotti in orbita.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+        <a class="fact-card" href="curiosita/vombato-escrementi-cubo.html">
+          <div class="fact-number">08</div>
+          <span class="fact-topic">ANIMALI</span>
+          <h3>I vombati producono escrementi a forma di cubo</h3>
+          <p>Sono gli unici animali conosciuti con questa particolarità. La forma nasce nell’intestino, dove zone più rigide e più elastiche modellano progressivamente il materiale.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+        <a class="fact-card" href="curiosita/saturno-galleggia-acqua.html">
+          <div class="fact-number">09</div>
+          <span class="fact-topic">PIANETI</span>
+          <h3>Saturno potrebbe galleggiare sull’acqua</h3>
+          <p>La sua densità media è inferiore a quella dell’acqua. Se esistesse una vasca abbastanza grande da contenerlo, il gigantesco pianeta gassoso galleggerebbe.</p>
+          <div class="fact-source"><span>✓ VERIFICATO DALLA REDAZIONE</span><small>Approfondimento PrimaVoce</small></div>
+        </a>
+      </div>
+      <div class="facts-note"><strong>Il metodo PrimaVoce:</strong> distinguiamo curiosità, ipotesi ed evidenze. Prima della pubblicazione ogni informazione deve essere controllata su fonti attendibili.</div>
+    </section>
+
+    <section class="newsletter">
+      <div><p class="eyebrow">OGNI MATTINA, IN 5 MINUTI</p><h2>Le notizie che contano, direttamente nella tua email.</h2></div>
+      <form id="newsletterForm"><label class="sr-only" for="email">Email</label><input id="email" type="email" placeholder="La tua email" required><button type="submit">ISCRIVITI</button></form>
+      <p class="form-message" id="formMessage" role="status"></p>
+    </section>
+  </main>
+
+  <footer><div class="shell footer-inner"><div class="logo footer-logo"><span>PRIMA</span><b>VOCE</b></div><p>Demo realizzata per Giuseppe · © 2026</p></div></footer>
+  <script src="script.js"></script>
+</body>
+</html>
