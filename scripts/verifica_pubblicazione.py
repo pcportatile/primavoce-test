@@ -230,7 +230,16 @@ def controlla_pagina(path: Path, index_html: str, errori: list[str]) -> None:
     if FONTI_PATTERN.search(html):
         errori.append(f"[{rel}] contiene una riga 'Fonti:'/'Bibliografia'/'Sitografia' vietata nelle pagine pubbliche (regola 9).")
 
-    body_match = re.search(r'<div class="(?:article-body|fact-content)">(.*?)</div>', html, re.S)
+    # Non basta ".*?</div>" non-greedy: article-body/fact-content spesso
+    # contiene <div> annidati (science-box, formula, ecc.) e il primo
+    # </div> incontrato è quello del div annidato, non quello di chiusura
+    # del contenuto — risultato: conteggio parole tagliato a metà articolo
+    # e falsi "troppo corto". Ci si ferma invece appena prima del prossimo
+    # fratello noto (editorial-note / fact-footer) o della fine dell'articolo.
+    body_match = re.search(
+        r'<div class="(?:article-body|fact-content)">(.*?)(?=<div class="(?:editorial-note|fact-footer)"|</article>)',
+        html, re.S,
+    )
     if body_match:
         testo = re.sub(r"<[^>]+>", " ", body_match.group(1))
         parole = [w for w in testo.split() if w.strip()]
